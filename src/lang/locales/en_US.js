@@ -46,6 +46,9 @@ module.exports = {
   'menu.search': 'Search',
   'menu.docs': 'Docs',
   'menu.blank-page': 'Blank Page',
+  'menu.merchant-page': 'Merchant',
+  'menu.merchant-provider-page': 'Merchant Provider',
+  'form-components.provider': 'Provider',
 
   /* 04.Error Page */
   'pages.error-title': 'Ooops... looks like an error occurred!',

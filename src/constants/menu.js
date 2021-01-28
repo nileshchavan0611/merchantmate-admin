@@ -35,6 +35,18 @@ const data = [
     to: `${adminRoot}/blank-page`,
   },
   {
+    id: 'merchant',
+    icon: 'simple-icon-organization',
+    label: 'menu.merchant-page',
+    to: `${adminRoot}/merchant-page`,
+  },
+  {
+    id: 'merchantprovider',
+    icon: 'simple-icon-organization',
+    label: 'menu.merchant-provider-page',
+    to: `${adminRoot}/merchant-provider-page`,
+  },
+  {
     id: 'docs',
     icon: 'iconsminds-library',
     label: 'menu.docs',

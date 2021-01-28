@@ -14,6 +14,12 @@ const SecondMenu = React.lazy(() =>
 const BlankPage = React.lazy(() =>
   import(/* webpackChunkName: "viwes-blank-page" */ './blank-page')
 );
+const MerchantPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './merchant-page')
+);
+const MerchantProviderPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './merchant-provider-page')
+);
 
 const App = ({ match }) => {
   return (
@@ -38,6 +44,14 @@ const App = ({ match }) => {
             <Route
               path={`${match.url}/blank-page`}
               render={(props) => <BlankPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/merchant-page`}
+              render={(props) => <MerchantPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/merchant-provider-page`}
+              render={(props) => <MerchantProviderPage {...props} />}
             />
             <Redirect to="/error" />
           </Switch>
