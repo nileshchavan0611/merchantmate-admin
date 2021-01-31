@@ -14,21 +14,34 @@ class MerchantPage extends React.Component {
       merchants: [],
     };
     this.searchHadler = this.searchHadler.bind(this);
+    this.deleteMerchant = this.deleteMerchant.bind(this);
+    this.getMerchants = this.getMerchants.bind(this);
   }
 
   componentDidMount() {
+    this.getMerchants();
+  }
+
+  getMerchants() {
     axois.get('Get').then((resData) => {
       this.setState({ merchants: resData.data });
     });
   }
 
   searchHadler(values) {
-    console.log(values);
     axios.get(`Search/${values.name}`).then((resData) => {
       this.setState({
         merchants: resData.data,
       });
     });
+  }
+
+  deleteMerchant(id) {
+    if (window.confirm('Are you sure want to delete?')) {
+      axios.post(`Delete/${id}`).then(() => {
+        this.getMerchants();
+      });
+    }
   }
 
   render() {
@@ -117,6 +130,7 @@ class MerchantPage extends React.Component {
                       <button
                         className="btn btn-xs btn-danger mx-1"
                         type="button"
+                        onClick={() => this.deleteMerchant(item.Id)}
                       >
                         <i className="simple-icon-trash" />
                       </button>
