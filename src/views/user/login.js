@@ -31,8 +31,8 @@ const validateEmail = (value) => {
 };
 
 const Login = ({ history, loading, error, loginUserAction }) => {
-  const [email] = useState('demo@gogo.com');
-  const [password] = useState('gogo123');
+  const [email] = useState('admin@admin.com');
+  const [password] = useState('admin');
 
   useEffect(() => {
     if (error) {
@@ -40,7 +40,7 @@ const Login = ({ history, loading, error, loginUserAction }) => {
     }
   }, [error]);
 
-  const onUserLogin = (values) => {
+  const onUserLogin = async (values) => {
     if (!loading) {
       if (values.email !== '' && values.password !== '') {
         loginUserAction(values, history);

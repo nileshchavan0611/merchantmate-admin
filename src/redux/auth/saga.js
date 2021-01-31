@@ -1,3 +1,6 @@
+/* eslint-disable prefer-const */
+/* eslint-disable no-debugger */
+/* eslint-disable prettier/prettier */
 import { all, call, fork, put, takeEvery } from 'redux-saga/effects';
 import { auth } from '../../helpers/Firebase';
 import {
@@ -21,34 +24,41 @@ import {
 
 import { adminRoot, currentUser } from '../../constants/defaultValues';
 import { setCurrentUser } from '../../helpers/Utils';
+import axois from '../../axois';
 
 export function* watchLoginUser() {
   // eslint-disable-next-line no-use-before-define
   yield takeEvery(LOGIN_USER, loginWithEmailPassword);
 }
 
-const loginWithEmailPasswordAsync = async (email, password) =>
+const loginWithEmailPasswordAsync = async (email, password) => {
   // eslint-disable-next-line no-return-await
-  await auth
-    .signInWithEmailAndPassword(email, password)
-    .then((user) => user)
-    .catch((error) => error);
+  let res = await axois.get(`UserLogin/${email}/${password}`)
+  res.message = res.status === 200 ? '' : 'login failed';    
 
+  return res;
+  // await auth
+  //   .signInWithEmailAndPassword(email, password)
+  //   .then((user) => user)
+  //   .catch((error) => error);
+};
 function* loginWithEmailPassword({ payload }) {
   const { email, password } = payload.user;
   const { history } = payload;
   try {
     const loginUser = yield call(loginWithEmailPasswordAsync, email, password);
+    console.log(loginUser);
     if (!loginUser.message) {
-      const item = { uid: loginUser.user.uid, ...currentUser };
+      const item = { uid: loginUser.UserID, ...currentUser };
       setCurrentUser(item);
       yield put(loginUserSuccess(item));
       history.push(adminRoot);
+      console.log(adminRoot);
     } else {
       yield put(loginUserError(loginUser.message));
     }
   } catch (error) {
-    yield put(loginUserError(error));
+    yield put(loginUserError('login failed'));
   }
 }
 
