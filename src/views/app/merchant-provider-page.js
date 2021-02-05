@@ -67,12 +67,14 @@ class MerchantProviderPage extends React.Component {
     const { merchantID, providerId } = this.state;
     return axois
       .post(`Merchants/api/Merchants/CreateMerchantProvider`, {
+        id: '0',
         provider_Id: providerId.value,
         merchant_ID: merchantID,
       })
       .then((resp) => {
         /* eslint-disable-line camelcase */
         console.log('save data', resp);
+        this.getMerchants();
       });
   };
 
