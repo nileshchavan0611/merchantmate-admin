@@ -1,7 +1,7 @@
 import React from 'react';
-import { Row, Button, Col } from 'reactstrap';
+import { Row, Button } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
 import IntlMessages from '../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
@@ -23,22 +23,30 @@ class MerchantPage extends React.Component {
   }
 
   getMerchants() {
-    axois.get('Get').then((resData) => {
+    axois.get('Merchants/api/Merchants/Get').then((resData) => {
       this.setState({ merchants: resData.data });
     });
   }
 
   searchHadler(values) {
-    axios.get(`Search/${values.name}`).then((resData) => {
-      this.setState({
-        merchants: resData.data,
-      });
-    });
+    if (values.name) {
+      axois
+        .get(`Merchants/api/Merchants/Search/${values.name}`)
+        .then((resData) => {
+          this.setState({ merchants: [] });
+          this.setState({
+            merchants: resData.data,
+          });
+          this.setState({});
+        });
+    } else {
+      this.getMerchants();
+    }
   }
 
   deleteMerchant(id) {
     if (window.confirm('Are you sure want to delete?')) {
-      axios.post(`Delete/${id}`).then(() => {
+      axois.get(`Merchants/api/Merchants/Delete/${id}`).then(() => {
         this.getMerchants();
       });
     }
@@ -46,6 +54,7 @@ class MerchantPage extends React.Component {
 
   render() {
     const { merchants } = this.state;
+    console.log('merchants', merchants);
     const { match } = this.props;
     return (
       <>
@@ -56,11 +65,23 @@ class MerchantPage extends React.Component {
           </Colxx>
         </Row>
         <Row>
+          <Colxx xxs="12" className="text-right">
+            <Link
+              as="button"
+              className="btn btn-sm btn-success mr-3"
+              to={`${match.url}/merchant-form-page`}
+            >
+              <i className="simple-icon-plus mr-2" />
+              Add
+            </Link>
+          </Colxx>
+        </Row>
+        <Row>
           <Colxx xxs="12" className="mb-4">
             <p>
               <IntlMessages id="menu.merchant-page" />
             </p>
-            <div className="mb-4 ml-auto col-4">
+            <div className="mb-4 ml-auto col-4 text-right">
               <Formik
                 initialValues={{
                   name: '',
@@ -74,24 +95,20 @@ class MerchantPage extends React.Component {
               >
                 {() => (
                   <Form className="">
-                    <Row form>
-                      <Col>
-                        <Field
-                          className="form-control"
-                          name="name"
-                          placeholder="Search"
-                        />
-                      </Col>
-                      <Col>
-                        <Button
-                          color="primary"
-                          type="submit"
-                          className="d-flex align-items-center"
-                        >
-                          Search
-                          <i className="simple-icon-magnifier ml-2" />
-                        </Button>
-                      </Col>
+                    <Row form className="flex-nowrap">
+                      <Field
+                        className="form-control mr-2"
+                        name="name"
+                        placeholder="Search"
+                      />
+                      <Button
+                        color="primary"
+                        type="submit"
+                        className="d-flex align-items-center"
+                      >
+                        Search
+                        <i className="simple-icon-magnifier ml-2" />
+                      </Button>
                     </Row>
                   </Form>
                 )}
@@ -112,25 +129,26 @@ class MerchantPage extends React.Component {
               </thead>
               <tbody>
                 {merchants.map((item) => (
-                  <tr key={`${item.id + item.User_GoID}row`}>
-                    <td>{item.Merchant_ID}</td>
-                    <td>{item.User_GoID}</td>
-                    <td>{item.User_TerminalID}</td>
-                    <td>{item.User_ClerkID}</td>
-                    <td>{item.BusinessName}</td>
-                    <td>{item.User_FirstName}</td>
-                    <td>{item.RegionCountry}</td>
+                  <tr key={`${item.id + item.user_id}row`}>
+                    <td>{item.merchant_ID}</td>
+                    <td>{item.user_GoID}</td>
+                    <td>{item.user_TerminalID}</td>
+                    <td>{item.user_ClerkID}</td>
+                    <td>{item.businessName}</td>
+                    <td>{item.user_FirstName}</td>
+                    <td>{item.regionCountry}</td>
                     <td>
-                      <button
+                      <Link
                         className="btn btn-xs btn-primary mx-1"
-                        type="button"
+                        as="button"
+                        to={`/app/merchant-page/merchant-form-page/${item.merchant_ID}`}
                       >
                         <i className="simple-icon-pencil" />
-                      </button>
+                      </Link>
                       <button
                         className="btn btn-xs btn-danger mx-1"
                         type="button"
-                        onClick={() => this.deleteMerchant(item.Id)}
+                        onClick={() => this.deleteMerchant(item.id)}
                       >
                         <i className="simple-icon-trash" />
                       </button>

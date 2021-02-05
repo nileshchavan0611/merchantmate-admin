@@ -17,17 +17,31 @@ const BlankPage = React.lazy(() =>
 const MerchantPage = React.lazy(() =>
   import(/* webpackChunkName: "viwes-blank-page" */ './merchant-page')
 );
+const MerchantFormPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './merchant-form-page')
+);
 const MerchantProviderPage = React.lazy(() =>
   import(/* webpackChunkName: "viwes-blank-page" */ './merchant-provider-page')
 );
 
+const UserPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './user-page')
+);
+
+const UserFormPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './user-form-page')
+);
 const App = ({ match }) => {
   return (
     <AppLayout>
       <div className="dashboard-wrapper">
         <Suspense fallback={<div className="loading" />}>
           <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/gogo`} />
+            <Redirect
+              exact
+              from={`${match.url}/`}
+              to={`${match.url}/merchant-page`}
+            />
             <Route
               path={`${match.url}/gogo`}
               render={(props) => <Gogo {...props} />}
@@ -46,6 +60,15 @@ const App = ({ match }) => {
               render={(props) => <BlankPage {...props} />}
             />
             <Route
+              path={`${match.url}/merchant-page/merchant-form-page/:merchantID`}
+              render={(props) => <MerchantFormPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/merchant-page/merchant-form-page`}
+              exact
+              render={(props) => <MerchantFormPage {...props} />}
+            />
+            <Route
               path={`${match.url}/merchant-page`}
               render={(props) => <MerchantPage {...props} />}
             />
@@ -53,7 +76,16 @@ const App = ({ match }) => {
               path={`${match.url}/merchant-provider-page`}
               render={(props) => <MerchantProviderPage {...props} />}
             />
-            <Redirect to="/error" />
+            <Route
+              path={`${match.url}/user-page/user-form-page`}
+              render={(props) => <UserFormPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/user-page`}
+              render={(props) => <UserPage {...props} />}
+            />
+
+            {/* <Redirect to="/error" /> */}
           </Switch>
         </Suspense>
       </div>

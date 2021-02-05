@@ -33,8 +33,6 @@ import {
 } from '../../constants/defaultValues';
 
 import { MobileMenuIcon, MenuIcon } from '../../components/svg';
-import TopnavEasyAccess from './Topnav.EasyAccess';
-import TopnavNotifications from './Topnav.Notifications';
 import TopnavDarkSwitch from './Topnav.DarkSwitch';
 
 import { getDirection, setDirection } from '../../helpers/Utils';
@@ -224,7 +222,7 @@ const TopNav = ({
           <MobileMenuIcon />
         </NavLink>
 
-        <div className="search">
+        <div className="search d-none">
           <Input
             name="searchKeyword"
             id="searchKeyword"
@@ -265,7 +263,7 @@ const TopNav = ({
             </DropdownMenu>
           </UncontrolledDropdown>
         </div>
-        <div className="position-relative d-none d-none d-lg-inline-block">
+        <div className="position-relative d-none d-none">
           <a
             className="btn btn-outline-primary btn-sm ml-2"
             target="_top"
@@ -283,8 +281,6 @@ const TopNav = ({
       <div className="navbar-right">
         {isDarkSwitchActive && <TopnavDarkSwitch />}
         <div className="header-icons d-inline-block align-middle">
-          <TopnavEasyAccess />
-          <TopnavNotifications />
           <button
             className="header-icon btn btn-empty d-none d-sm-inline-block"
             type="button"
@@ -301,17 +297,12 @@ const TopNav = ({
         <div className="user d-inline-block">
           <UncontrolledDropdown className="dropdown-menu-right">
             <DropdownToggle className="p-0" color="empty">
-              <span className="name mr-1">Sarah Kortney</span>
+              <span className="name mr-1">Admin</span>
               <span>
-                <img alt="Profile" src="/assets/img/profiles/l-1.jpg" />
+                <img alt="Profile" src="/assets/img/profiles/profile-10.png" />
               </span>
             </DropdownToggle>
             <DropdownMenu className="mt-3" right>
-              <DropdownItem>Account</DropdownItem>
-              <DropdownItem>Features</DropdownItem>
-              <DropdownItem>History</DropdownItem>
-              <DropdownItem>Support</DropdownItem>
-              <DropdownItem divider />
               <DropdownItem onClick={() => handleLogout()}>
                 Sign out
               </DropdownItem>

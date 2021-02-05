@@ -743,7 +743,7 @@ const Home = () => {
                     <img
                       className="footer-logo"
                       alt="footer logo"
-                      src="/assets/logos/white-full.svg"
+                      src="/assets/logos/logo.jpg"
                     />
                   </a>
                 </div>

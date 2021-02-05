@@ -33,8 +33,11 @@ export function* watchLoginUser() {
 
 const loginWithEmailPasswordAsync = async (email, password) => {
   // eslint-disable-next-line no-return-await
-  let res = await axois.get(`UserLogin/${email}/${password}`)
-  res.message = res.status === 200 ? '' : 'login failed';    
+  let res = await axois.post(`user/token`, {
+    "username": email,
+    "password": password
+  })
+  res.message = res.status === 200 ? '' : 'login failed';
 
   return res;
   // await auth

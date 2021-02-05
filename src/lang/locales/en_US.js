@@ -47,7 +47,10 @@ module.exports = {
   'menu.docs': 'Docs',
   'menu.blank-page': 'Blank Page',
   'menu.merchant-page': 'Merchant',
+  'menu.merchant-form-page': 'Merchant Form',
+  'menu.user-form-page': 'User Form',
   'menu.merchant-provider-page': 'Merchant Provider',
+  'menu.user-page': 'User',
   'form-components.provider': 'Provider',
 
   /* 04.Error Page */

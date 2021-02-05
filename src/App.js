@@ -19,9 +19,6 @@ import {
 import { getDirection } from './helpers/Utils';
 import { ProtectedRoute } from './helpers/authHelper';
 
-const ViewHome = React.lazy(() =>
-  import(/* webpackChunkName: "views" */ './views/home')
-);
 const ViewApp = React.lazy(() =>
   import(/* webpackChunkName: "views-app" */ './views/app')
 );
@@ -46,6 +43,14 @@ class App extends React.Component {
       document.body.classList.add('ltr');
       document.body.classList.remove('rtl');
     }
+  }
+
+  componentDidMount() {
+    const script = document.createElement('script');
+    script.src =
+      'https://maps.googleapis.com/maps/api/js?key=AIzaSyAznUme5ZpVbeAPPCyO6v-nTMKXBOKKJaU&libraries=places';
+    script.async = true;
+    document.body.appendChild(script);
   }
 
   render() {
@@ -83,14 +88,7 @@ class App extends React.Component {
                     exact
                     render={(props) => <ViewUnauthorized {...props} />}
                   />
-                  <Route
-                    path="/"
-                    exact
-                    render={(props) => <ViewHome {...props} />}
-                  />
-                  {/*
                   <Redirect exact from="/" to={adminRoot} />
-                  */}
                   <Redirect to="/error" />
                 </Switch>
               </Router>

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Row, Card, CardTitle, Label, FormGroup, Button } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
@@ -81,16 +82,7 @@ const Login = ({ history, loading, error, loginUserAction }) => {
                     <Label>
                       <IntlMessages id="user.email" />
                     </Label>
-                    <Field
-                      className="form-control"
-                      name="email"
-                      validate={validateEmail}
-                    />
-                    {errors.email && touched.email && (
-                      <div className="invalid-feedback d-block">
-                        {errors.email}
-                      </div>
-                    )}
+                    <Field className="form-control" name="email" />
                   </FormGroup>
                   <FormGroup className="form-group has-float-label">
                     <Label>

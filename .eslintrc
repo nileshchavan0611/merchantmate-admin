@@ -35,7 +35,11 @@
       "react/jsx-props-no-spreading": 0,
       "no-console": "off",
       "react/prop-types": 0,
-      "prettier/prettier": ["error"]
+      "prettier/prettier": ["error"],
+      "import/no-unresolved": [
+        2, 
+        { "caseSensitive": false }
+      ]
     },
     "globals": {
       "window": true,
