@@ -220,7 +220,6 @@ class MerchantFormPage extends React.Component {
                 enableReinitialize
               >
                 {(props) => {
-                  console.log('nilesh', props.values);
                   return (
                     <Form className="">
                       <Row>

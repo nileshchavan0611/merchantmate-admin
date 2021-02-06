@@ -92,14 +92,26 @@ class UserFormPage extends React.Component {
     );
   };
 
-  saveUser = (values) => {
+  saveUser = async (values) => {
     const { merchantID, userRole } = this.state;
     const { history } = this.props;
     const { match } = this.props;
+    if (!merchantID) {
+      this.setState({ errorMsg: 'Please enter Merchant ID' });
+      return null;
+    }
+    const checkTerminalData = await axois.get(
+      `/Merchants/api/Merchants/GetClerk/${merchantID}/${values.user_ClerkID}/${values.user_TerminalID}`
+    );
+    if (checkTerminalData.data) {
+      console.log(checkTerminalData.data);
+      this.setState({ errorMsg: 'Clerk Id exists for this Terminal ID.' });
+      return null;
+    }
     if (match.params.terminalID) {
       return axois
         .post(`Merchants/api/Merchants/EditMerchantUser`, {
-          id: values.id,
+          id: values.user_id,
           goID: values.user_GoID,
           merchant_ID: merchantID,
           clerkID: values.user_ClerkID,
@@ -148,7 +160,7 @@ class UserFormPage extends React.Component {
       // eslint-disable-next-line prefer-destructuring
       userData = resp.data;
 
-      formData.id = userData.id;
+      formData.user_id = userData.id;
       formData.user_GoID = userData.goID;
       formData.user_ClerkID = userData.clerkID;
       formData.user_TerminalID = userData.terminalID;
@@ -194,6 +206,7 @@ class UserFormPage extends React.Component {
       this.setState({
         selected: [query],
         merchantID: query,
+        errorMsg: '',
       });
       this.setState({
         formData,
@@ -217,13 +230,28 @@ class UserFormPage extends React.Component {
 
   menuItemClickHandler = (str) => {
     if (str[0]) {
-      this.setState({ merchantID: str[0].id });
+      this.setState({ merchantID: str[0].id, selected: [str[0].id] });
       this.getMarchantDetails(str[0].id);
     }
   };
 
+  clearStateData = () => {
+    this.setState({
+      formData: {
+        businessName: '',
+        emailAddress: '',
+        regionCountry: '',
+        site_Id: '',
+        businessaddress: '',
+      },
+      region: '',
+      address: '',
+    });
+  };
+
   handleSearch = (query) => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, selected: [], merchantID: '' });
+    this.clearStateData();
     this.makeAndHandleRequest(query).then((resp) => {
       this.setState({
         isLoading: false,
@@ -245,7 +273,15 @@ class UserFormPage extends React.Component {
 
   render() {
     const { match } = this.props;
-    const { formData, userRole, roles, dataLoading } = this.state;
+    const {
+      formData,
+      userRole,
+      roles,
+      dataLoading,
+      errorMsg,
+      merchantID,
+      successMsg,
+    } = this.state;
     console.log(formData);
     console.log(match);
     return (
@@ -261,6 +297,8 @@ class UserFormPage extends React.Component {
             <p>
               <IntlMessages id="menu.user-form-page" />
             </p>
+            {errorMsg && <p className="error-msg">{errorMsg}</p>}
+            {successMsg && <p className="success-msg">{successMsg}</p>}
             <div className="">
               {!dataLoading && (
                 <Formik
@@ -275,7 +313,7 @@ class UserFormPage extends React.Component {
                   enableReinitialize
                 >
                   {(props) => (
-                    <Form className="" autoComplete="false">
+                    <Form className="" autoComplete="new-password">
                       <Row>
                         <Col>
                           <AsyncTypeahead
@@ -284,6 +322,7 @@ class UserFormPage extends React.Component {
                             labelKey="label"
                             className="mb-3"
                             minLength={1}
+                            isInvalid={errorMsg && !merchantID}
                             onInputChange={this.handleInputChange}
                             onChange={this.menuItemClickHandler}
                             onSearch={this.handleSearch}
@@ -408,6 +447,7 @@ class UserFormPage extends React.Component {
                               name="user_TerminalID"
                               placeholder="Terminal ID"
                               value={props.values.user_TerminalID}
+                              required
                             />
                           </FormGroup>
                         </Col>
@@ -419,6 +459,7 @@ class UserFormPage extends React.Component {
                               name="user_ClerkID"
                               placeholder="Clerk ID"
                               value={props.values.user_ClerkID}
+                              required
                             />
                           </FormGroup>
                         </Col>
@@ -430,6 +471,7 @@ class UserFormPage extends React.Component {
                               name="user_FirstName"
                               placeholder="First Name"
                               value={props.values.user_FirstName}
+                              required
                             />
                           </FormGroup>
                         </Col>
@@ -441,6 +483,7 @@ class UserFormPage extends React.Component {
                               name="user_LastName"
                               placeholder="Last Name"
                               value={props.values.user_LastName}
+                              required
                             />
                           </FormGroup>
                         </Col>
@@ -466,6 +509,7 @@ class UserFormPage extends React.Component {
                               name="user_UserID"
                               placeholder="Username"
                               value={props.values.user_UserID}
+                              required
                             />
                           </FormGroup>
                         </Col>
@@ -473,11 +517,13 @@ class UserFormPage extends React.Component {
                           <FormGroup>
                             <Label>Passsword</Label>
                             <Field
+                              autoComplete="new-password"
                               className="form-control mb-3"
                               name="user_Password"
                               type="password"
                               placeholder="Passsword"
                               value={props.values.user_Password}
+                              required
                             />
                           </FormGroup>
                         </Col>
@@ -490,6 +536,7 @@ class UserFormPage extends React.Component {
                               type="password"
                               placeholder="Repeat Passsword"
                               value={props.values.repeat_password}
+                              required
                             />
                           </FormGroup>
                         </Col>
