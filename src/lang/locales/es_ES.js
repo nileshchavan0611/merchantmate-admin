@@ -37,6 +37,8 @@ module.exports = {
   'menu.gogo': 'Gogo',
   'menu.start': 'Comienzo',
   'menu.second-menu': 'Segundo menú',
+  'menu.edit': 'Edit',
+  'menu.add': 'Add',
   'menu.second': 'Segundo',
   'menu.ui': 'IU',
   'menu.charts': 'Gráficos',

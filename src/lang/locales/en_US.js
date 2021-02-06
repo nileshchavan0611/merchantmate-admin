@@ -45,6 +45,8 @@ module.exports = {
   'menu.todo': 'Todo',
   'menu.search': 'Search',
   'menu.docs': 'Docs',
+  'menu.add': 'Add',
+  'menu.edit': 'Edit',
   'menu.blank-page': 'Blank Page',
   'menu.merchant-page': 'Merchant',
   'menu.merchant-form-page': 'Merchant Form',

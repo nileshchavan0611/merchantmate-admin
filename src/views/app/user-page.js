@@ -22,11 +22,11 @@ class MerchantProviderPage extends React.Component {
     };
     this.searchHadler = this.searchHadler.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
-    this.getMerchants = this.getMerchants.bind(this);
+    this.getUsers = this.getUsers.bind(this);
   }
 
   componentDidMount() {
-    this.getMerchants();
+    const { match } = this.props;
     this.setState({
       roles: ['Supervisor', 'Merchant Admin', 'Clerk', 'Interlinc Agent'].map(
         (item) => {
@@ -38,12 +38,25 @@ class MerchantProviderPage extends React.Component {
         }
       ),
     });
+    if (match.params.goId) {
+      this.getUsersByMerchantId(match.params.goId);
+    } else {
+      this.getUsers();
+    }
   }
 
-  getMerchants() {
-    axois.get('Merchants/api/Merchants/Get').then((resData) => {
+  getUsers() {
+    axois.get('Merchants/api/Merchants/GetAllUsers').then((resData) => {
       this.setState({ users: resData.data || [] });
     });
+  }
+
+  getUsersByMerchantId(goId) {
+    axois
+      .get(`/Merchants/api/Merchants/GetUsersByGoID/${goId}`)
+      .then((resData) => {
+        this.setState({ users: resData.data || [] });
+      });
   }
 
   onSubmit = (values) => {
@@ -100,7 +113,7 @@ class MerchantProviderPage extends React.Component {
   deleteUser(id) {
     if (window.confirm('Are you sure want to delete?')) {
       axois.get(`Merchants/api/Merchants/DeleteTerminal/${id}`).then(() => {
-        this.getMerchants();
+        this.getUsers();
       });
     }
   }
@@ -157,7 +170,7 @@ class MerchantProviderPage extends React.Component {
               </thead>
               <tbody>
                 {users.map((item) => (
-                  <tr key={`${item}row`}>
+                  <tr key={`${item.user_id}row`}>
                     <td>{item.businessName}</td>
                     <td>{item.user_TerminalID}</td>
                     <td>{item.user_ClerkID}</td>
@@ -165,12 +178,13 @@ class MerchantProviderPage extends React.Component {
                     <td>{item.user_FirstName}</td>
                     <td>{item.user_LastName}</td>
                     <td>
-                      <button
+                      <Link
                         className="btn btn-xs btn-primary mx-1"
                         type="button"
+                        to={`/app/user-page/user-form-page/edit/${item.user_TerminalID}/${item.user_Merchant_ID}`}
                       >
                         <i className="simple-icon-pencil" />
-                      </button>
+                      </Link>
                       <button
                         className="btn btn-xs btn-danger mx-1"
                         type="button"

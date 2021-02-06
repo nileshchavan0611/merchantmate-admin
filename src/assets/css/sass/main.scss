@@ -11,3 +11,19 @@ html {
     background-color: $theme-color-1 !important;
 }
 */
+.error-msg{
+    background-color: rgba(255,100,100,.3);
+    border-left-color: #ff6464;
+    border-left: 4px solid transparent;
+    margin-left: -1rem;
+    padding: 1.2rem 1.2rem 1.2rem calc(1rem - 4px);
+    margin-bottom: 2rem;
+}
+.success-msg{
+    background-color: rgba(105, 255, 100, 0.3);
+    border-left-color: #64ff71;
+    border-left: 4px solid transparent;
+    margin-left: -1rem;
+    padding: 1.2rem 1.2rem 1.2rem calc(1rem - 4px);
+    margin-bottom: 2rem;
+}

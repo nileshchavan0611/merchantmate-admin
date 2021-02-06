@@ -60,11 +60,6 @@ const Login = ({ history, loading, error, loginUserAction }) => {
             <p className="white mb-0">
               Please use your credentials to login.
               <br />
-              If you are not a member, please{' '}
-              <NavLink to="/user/register" className="white">
-                register
-              </NavLink>
-              .
             </p>
           </div>
           <div className="form-side">

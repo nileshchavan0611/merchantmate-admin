@@ -16,6 +16,7 @@ class MerchantProviderPage extends React.Component {
       merchantProviders: [],
       selectedValue: '',
       providers: [],
+      successMsg: '',
     };
     this.searchHadler = this.searchHadler.bind(this);
     this.deleteMerchantProvider = this.deleteMerchantProvider.bind(this);
@@ -65,6 +66,14 @@ class MerchantProviderPage extends React.Component {
 
   saveMerchantProvider = () => {
     const { merchantID, providerId } = this.state;
+    if (!merchantID) {
+      this.setState({ errorMsg: 'Please enter Merchant ID' });
+      return null;
+    }
+    if (!providerId) {
+      this.setState({ errorMsg: 'Please enter Provider ID' });
+      return null;
+    }
     return axois
       .post(`Merchants/api/Merchants/CreateMerchantProvider`, {
         id: '0',
@@ -75,11 +84,19 @@ class MerchantProviderPage extends React.Component {
         /* eslint-disable-line camelcase */
         console.log('save data', resp);
         this.getMerchants();
+        this.setState({
+          errorMsg: '',
+          merchantID: '',
+          providerId: '',
+          selected: [],
+        });
+
+        this.setState({ successMsg: 'Merchant Provider Added!' });
       });
   };
 
   handleSearch = (query) => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, selected: [], merchantID: '' });
     this.makeAndHandleRequest(query).then((resp) => {
       this.setState({
         isLoading: false,
@@ -98,7 +115,7 @@ class MerchantProviderPage extends React.Component {
 
   menuItemClickHandler = (str) => {
     if (str[0]) {
-      this.setState({ merchantID: str[0].id });
+      this.setState({ merchantID: str[0].id, selected: [str[0].id] });
     }
   };
 
@@ -118,7 +135,7 @@ class MerchantProviderPage extends React.Component {
   deleteMerchantProvider(id) {
     if (window.confirm('Are you sure want to delete?')) {
       axois
-        .post(`Merchants/api/Merchants/DeleteMerchantProvider/${id}`)
+        .get(`Merchants/api/Merchants/DeleteMerchantProvider/${id}`)
         .then(() => {
           this.getMerchants();
         });
@@ -136,7 +153,14 @@ class MerchantProviderPage extends React.Component {
   }
 
   render() {
-    const { merchantProviders, providerId, providers } = this.state;
+    const {
+      merchantProviders,
+      providerId,
+      providers,
+      errorMsg,
+      successMsg,
+      merchantID,
+    } = this.state;
     const { match } = this.props;
     return (
       <>
@@ -151,6 +175,9 @@ class MerchantProviderPage extends React.Component {
             <p>
               <IntlMessages id="menu.merchant-provider-page" />
             </p>
+            {errorMsg && <p className="error-msg">{errorMsg}</p>}
+            {successMsg && <p className="success-msg">{successMsg}</p>}
+
             <div className="mb-4 col-4">
               <Formik
                 initialValues={{
@@ -171,6 +198,7 @@ class MerchantProviderPage extends React.Component {
                         id="async-pagination-example"
                         labelKey="label"
                         className="mb-3"
+                        isInvalid={errorMsg && !merchantID}
                         minLength={1}
                         onInputChange={this.handleInputChange}
                         onChange={this.menuItemClickHandler}
@@ -204,6 +232,7 @@ class MerchantProviderPage extends React.Component {
                         value={providerId}
                         onChange={this.handleSelectChange}
                         options={providers}
+                        required
                       />
                     </FormGroup>
                     <Button color="primary" type="submit">
@@ -257,14 +286,15 @@ class MerchantProviderPage extends React.Component {
               </thead>
               <tbody>
                 {merchantProviders.map((item) => (
-                  <tr key={`${item}row`}>
-                    <td>Walmart</td>
-                    <td>Walmart Inc</td>
-                    <td>Ready Credit</td>
+                  <tr key={`${item.id}row`}>
+                    <td>{item.merchant_ID}</td>
+                    <td>{item.business_Name}</td>
+                    <td>{item.provider_Name}</td>
                     <td>
                       <button
                         className="btn btn-xs btn-danger mx-1"
                         type="button"
+                        onClick={() => this.deleteMerchantProvider(item.id)}
                       >
                         <i className="simple-icon-trash" />
                       </button>

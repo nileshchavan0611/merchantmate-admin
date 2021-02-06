@@ -15,8 +15,8 @@
 .form-control.is-invalid:focus,
 .was-validated .custom-select:invalid:focus,
 .custom-select.is-invalid:focus {
-  border-color: $separator-color;
-  background: initial;
+  // border-color: $separator-color;
+  background: #fff;
 }
 
 .invalid-feedback {

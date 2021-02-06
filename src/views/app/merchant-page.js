@@ -23,7 +23,7 @@ class MerchantPage extends React.Component {
   }
 
   getMerchants() {
-    axois.get('Merchants/api/Merchants/Get').then((resData) => {
+    axois.get('Merchants/api/Merchants/GetMerchantList').then((resData) => {
       this.setState({ merchants: resData.data });
     });
   }
@@ -119,11 +119,12 @@ class MerchantPage extends React.Component {
                 <tr>
                   <th>Merchant ID</th>
                   <th>GoID</th>
-                  <th>Terminal ID</th>
-                  <th>Clerk ID</th>
                   <th>Business Name</th>
-                  <th>Name</th>
+                  <th>Address</th>
                   <th>Country</th>
+                  <th>Email</th>
+                  <th>Site</th>
+                  <th>Created At</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -131,12 +132,17 @@ class MerchantPage extends React.Component {
                 {merchants.map((item) => (
                   <tr key={`${item.id + item.user_id}row`}>
                     <td>{item.merchant_ID}</td>
-                    <td>{item.user_GoID}</td>
-                    <td>{item.user_TerminalID}</td>
-                    <td>{item.user_ClerkID}</td>
-                    <td>{item.businessName}</td>
-                    <td>{item.user_FirstName}</td>
+                    <td>{item.id}</td>
+                    <td>
+                      <Link to={`/app/user-page/${item.id}`}>
+                        {item.businessName}
+                      </Link>
+                    </td>
+                    <td>{item.businessaddress}</td>
                     <td>{item.regionCountry}</td>
+                    <td>{item.emailAddress}</td>
+                    <td>{item.site_Id}</td>
+                    <td>{item.dateCreated}</td>
                     <td>
                       <Link
                         className="btn btn-xs btn-primary mx-1"
@@ -152,6 +158,14 @@ class MerchantPage extends React.Component {
                       >
                         <i className="simple-icon-trash" />
                       </button>
+                      <Link
+                        className="btn btn-xs btn-primary mx-1"
+                        as="button"
+                        to={`/app/user-page/user-form-page/add/${item.merchant_ID}`}
+                      >
+                        Add User
+                        <i className="simple-icon-add" />
+                      </Link>
                     </td>
                   </tr>
                 ))}

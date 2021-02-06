@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { Row, Button, Col } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
@@ -6,10 +7,10 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from 'react-places-autocomplete';
+import { GoogleMap, Marker, withGoogleMap } from 'react-google-maps';
 import IntlMessages from '../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
-
 import axois from '../../axois';
 // import axois from '../../axois';
 
@@ -17,6 +18,7 @@ class MerchantFormPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      latLng: {},
       isLoading: false,
       merchantID: '',
       address: '',
@@ -28,6 +30,7 @@ class MerchantFormPage extends React.Component {
         site_Id: '',
         businessaddress: '',
       },
+      errorMsg: '',
     };
     this.saveMerchant = this.saveMerchant.bind(this);
   }
@@ -55,6 +58,11 @@ class MerchantFormPage extends React.Component {
   saveMerchant = (values) => {
     const { merchantID, address, region, formData } = this.state;
     const { history } = this.props;
+    if (!merchantID) {
+      this.setState({ errorMsg: 'Please enter merchant id' });
+      return null;
+    }
+
     if (formData.id) {
       return axois
         .post(`Merchants/api/Merchants/Edit`, {
@@ -66,16 +74,6 @@ class MerchantFormPage extends React.Component {
           regionCountry: region,
           site_Id: values.site_Id,
           logo: formData.logo,
-          user_id: formData.user_id,
-          user_GoID: formData.user_GoID,
-          user_Merchant_ID: merchantID,
-          user_ClerkID: formData.user_ClerkID,
-          user_TerminalID: formData.user_TerminalID,
-          user_FirstName: formData.user_FirstName,
-          user_LastName: formData.user_LastName,
-          user_Role: formData.user_Role,
-          user_UserID: formData.user_UserID,
-          user_Password: formData.user_Password,
         })
         .then((resp) => {
           /* eslint-disable-line camelcase */
@@ -92,16 +90,6 @@ class MerchantFormPage extends React.Component {
         regionCountry: region,
         site_Id: values.site_Id,
         logo: '',
-        user_id: 0,
-        user_GoID: '',
-        user_Merchant_ID: merchantID,
-        user_ClerkID: 'admin_clerk',
-        user_TerminalID: 'admin_terminal',
-        user_FirstName: 'admin',
-        user_LastName: 'admin',
-        user_Role: '1',
-        user_UserID: 'admin',
-        user_Password: 'admin',
       })
       .then((resp) => {
         /* eslint-disable-line camelcase */
@@ -117,6 +105,11 @@ class MerchantFormPage extends React.Component {
       /* eslint-disable-line camelcase */
       console.log('rep', resp);
       const merchantData = resp.data[0];
+      this.setState({
+        selected: [query],
+        merchantID: query,
+        errorMsg: '',
+      });
       if (merchantData) {
         this.setState({
           formData: merchantData,
@@ -139,8 +132,23 @@ class MerchantFormPage extends React.Component {
     }
   };
 
+  clearStateData = () => {
+    this.setState({
+      formData: {
+        businessName: '',
+        emailAddress: '',
+        regionCountry: '',
+        site_Id: '',
+        businessaddress: '',
+      },
+      region: '',
+      address: '',
+    });
+  };
+
   handleSearch = (query) => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, selected: [], merchantID: '' });
+    this.clearStateData();
     this.makeAndHandleRequest(query).then((resp) => {
       this.setState({
         isLoading: false,
@@ -165,13 +173,24 @@ class MerchantFormPage extends React.Component {
         this.handleAddressChange(results[0].formatted_address);
         return getLatLng(results[0]);
       })
-      .then((latLng) => console.log('Success', latLng))
+      .then((latLng) => {
+        console.log('Success', latLng);
+        this.setState({ latLng });
+      })
       .catch((error) => console.error('Error', error));
   };
 
   render() {
     const { match } = this.props;
-    const { formData, address, region, query } = this.state;
+    const {
+      formData,
+      address,
+      region,
+      query,
+      latLng,
+      errorMsg,
+      merchantID,
+    } = this.state;
     console.log(formData);
     console.log(match, query);
     return (
@@ -187,6 +206,7 @@ class MerchantFormPage extends React.Component {
             <p>
               <IntlMessages id="menu.merchant-form-page" />
             </p>
+            {errorMsg && <p className="error-msg">{errorMsg}</p>}
             <div className="">
               <Formik
                 initialValues={formData}
@@ -211,7 +231,7 @@ class MerchantFormPage extends React.Component {
                             labelKey="label"
                             className="mb-3"
                             minLength={1}
-                            defaultInputValue={query}
+                            isInvalid={errorMsg && !merchantID}
                             onInputChange={this.handleInputChange}
                             onChange={this.menuItemClickHandler}
                             onSearch={this.handleSearch}
@@ -230,12 +250,14 @@ class MerchantFormPage extends React.Component {
                             name="businessName"
                             value={props.values.businessName}
                             placeholder="business Name"
+                            required
                           />
 
                           <PlacesAutocomplete
                             value={address}
                             onChange={this.handleAddressChange}
                             onSelect={this.handleAddressSelect}
+                            required
                           >
                             {({
                               getInputProps,
@@ -249,6 +271,7 @@ class MerchantFormPage extends React.Component {
                                     placeholder: 'Search Places ...',
                                     className:
                                       'location-search-input form-control mb-3',
+                                    required: true,
                                   })}
                                 />
                                 <div className="autocomplete-dropdown-container">
@@ -289,6 +312,7 @@ class MerchantFormPage extends React.Component {
                             value={region}
                             onBlur={this.handleRegionChange}
                             onChange={this.handleRegionChange}
+                            required
                           >
                             <option value="">Select Region</option>
                             <option value="Afghanistan">Afghanistan</option>
@@ -532,6 +556,8 @@ class MerchantFormPage extends React.Component {
                             name="emailAddress"
                             value={props.values.emailAddress}
                             placeholder="Email Address"
+                            type="email"
+                            required
                           />
 
                           <Field
@@ -551,7 +577,11 @@ class MerchantFormPage extends React.Component {
                           </Button>
                         </Col>
                         <Col>
-                          <div>Map</div>
+                          <div>
+                            {/* <GoogleMap defaultZoom={8} defaultCenter={latLng}>
+                              <Marker position={latLng} />
+                            </GoogleMap> */}
+                          </div>
                         </Col>
                       </Row>
                     </Form>
@@ -565,5 +595,4 @@ class MerchantFormPage extends React.Component {
     );
   }
 }
-
 export default MerchantFormPage;

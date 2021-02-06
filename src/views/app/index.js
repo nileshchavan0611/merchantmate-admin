@@ -77,8 +77,20 @@ const App = ({ match }) => {
               render={(props) => <MerchantProviderPage {...props} />}
             />
             <Route
+              path={`${match.url}/user-page/user-form-page/edit/:terminalID/:merchantID`}
+              render={(props) => <UserFormPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/user-page/user-form-page/add/:merchantID`}
+              render={(props) => <UserFormPage {...props} />}
+            />
+            <Route
               path={`${match.url}/user-page/user-form-page`}
               render={(props) => <UserFormPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/user-page/:goId`}
+              render={(props) => <UserPage {...props} />}
             />
             <Route
               path={`${match.url}/user-page`}
