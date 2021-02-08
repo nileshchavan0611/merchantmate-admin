@@ -30,6 +30,8 @@
     "react-datepicker": "^3.4.0",
     "react-dom": "^17.0.1",
     "react-dropzone-component": "^3.2.0",
+    "react-geocode": "^0.2.3",
+    "react-google-autocomplete": "^1.2.6",
     "react-google-maps": "^9.4.5",
     "react-headroom": "^3.1.0",
     "react-image-lightbox": "^5.1.1",

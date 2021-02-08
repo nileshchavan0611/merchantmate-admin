@@ -7,7 +7,7 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from 'react-places-autocomplete';
-import { GoogleMap, Marker, withGoogleMap } from 'react-google-maps';
+import Home from './Map/Home';
 import IntlMessages from '../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
@@ -22,6 +22,9 @@ class MerchantFormPage extends React.Component {
       isLoading: false,
       merchantID: '',
       address: '',
+      markerPosition: {},
+      mapPosition: {},
+      place: '',
       selected: [],
       formData: {
         businessName: '',
@@ -167,6 +170,7 @@ class MerchantFormPage extends React.Component {
   };
 
   handleAddressSelect = (address) => {
+    this.setState({ place: address });
     geocodeByAddress(address)
       .then((results) => {
         console.log(results[0]);
@@ -190,6 +194,9 @@ class MerchantFormPage extends React.Component {
       latLng,
       errorMsg,
       merchantID,
+      markerPosition,
+      mapPosition,
+      place,
     } = this.state;
     console.log(formData);
     console.log(match, query);
@@ -577,9 +584,13 @@ class MerchantFormPage extends React.Component {
                         </Col>
                         <Col>
                           <div>
-                            {/* <GoogleMap defaultZoom={8} defaultCenter={latLng}>
-                              <Marker position={latLng} />
-                            </GoogleMap> */}
+                            <div className="Map">
+                              <Home
+                                markerPosition={markerPosition}
+                                mapPosition={mapPosition}
+                                place={place}
+                              />
+                            </div>
                           </div>
                         </Col>
                       </Row>
