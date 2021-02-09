@@ -108,6 +108,8 @@ class MerchantFormPage extends React.Component {
       /* eslint-disable-line camelcase */
       console.log('rep', resp);
       const merchantData = resp.data[0];
+      this.handleAddressSelect(merchantData.businessaddress);
+
       this.setState({
         selected: [query],
         merchantID: query,
@@ -170,9 +172,9 @@ class MerchantFormPage extends React.Component {
   };
 
   handleAddressSelect = (address) => {
-    this.setState({ place: address });
     geocodeByAddress(address)
       .then((results) => {
+        this.setState({ place: results[0] });
         console.log(results[0]);
         this.handleAddressChange(results[0].formatted_address);
         return getLatLng(results[0]);
@@ -237,7 +239,7 @@ class MerchantFormPage extends React.Component {
                             labelKey="label"
                             className="mb-3"
                             minLength={1}
-                            isInvalid={errorMsg && !merchantID}
+                            isInvalid={!!(errorMsg && !merchantID)}
                             onInputChange={this.handleInputChange}
                             onChange={this.menuItemClickHandler}
                             onSearch={this.handleSearch}

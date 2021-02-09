@@ -11,6 +11,7 @@ import IntlMessages from '../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
 import CustomSelectInput from '../../components/common/CustomSelectInput';
+import Home from './Map/Home';
 
 import axois from '../../axois';
 // import axois from '../../axois';
@@ -22,6 +23,9 @@ class UserFormPage extends React.Component {
       isLoading: false,
       isAdd: true,
       merchantID: '',
+      markerPosition: {},
+      mapPosition: {},
+      place: '',
       formData: {
         businessName: '',
         emailAddress: '',
@@ -193,6 +197,7 @@ class UserFormPage extends React.Component {
       formData = resp.data[0];
 
       formData.user_GoID = formData.id;
+      this.handleAddressSelect(formData.businessaddress);
       if (isAdd) {
         formData.user_ClerkID = '';
         formData.user_TerminalID = '';
@@ -266,7 +271,10 @@ class UserFormPage extends React.Component {
 
   handleAddressSelect = (address) => {
     geocodeByAddress(address)
-      .then((results) => getLatLng(results[0]))
+      .then((results) => {
+        this.setState({ place: results[0] });
+        return getLatLng(results[0]);
+      })
       .then((latLng) => console.log('Success', latLng))
       .catch((error) => console.error('Error', error));
   };
@@ -280,6 +288,9 @@ class UserFormPage extends React.Component {
       dataLoading,
       errorMsg,
       merchantID,
+      markerPosition,
+      mapPosition,
+      place,
       successMsg,
     } = this.state;
     console.log(formData);
@@ -322,7 +333,7 @@ class UserFormPage extends React.Component {
                             labelKey="label"
                             className="mb-3"
                             minLength={1}
-                            isInvalid={errorMsg && !merchantID}
+                            isInvalid={!!(errorMsg && !merchantID)}
                             onInputChange={this.handleInputChange}
                             onChange={this.menuItemClickHandler}
                             onSearch={this.handleSearch}
@@ -422,7 +433,15 @@ class UserFormPage extends React.Component {
                           />
                         </Col>
                         <Col>
-                          <div>Map</div>
+                          <div>
+                            <div className="Map">
+                              <Home
+                                markerPosition={markerPosition}
+                                mapPosition={mapPosition}
+                                place={place}
+                              />
+                            </div>
+                          </div>
                         </Col>
                       </Row>
                       <Row>
