@@ -53,6 +53,8 @@ module.exports = {
   'menu.user-form-page': 'User Form',
   'menu.merchant-provider-page': 'Merchant Provider',
   'menu.user-page': 'User',
+  'menu.notification-page': 'Notification',
+  'menu.notification-form-page': 'Notification Form',
   'form-components.provider': 'Provider',
 
   /* 04.Error Page */

@@ -270,7 +270,7 @@ class Map extends Component {
           }}
         >
           {/* InfoWindow on top of marker */}
-          <InfoWindow
+          {/* <InfoWindow
             onClose={this.onInfoWindowClose}
             position={{
               lat: this.state.markerPosition.lat + 0.0018,
@@ -282,7 +282,7 @@ class Map extends Component {
                 {this.state.address}
               </span>
             </div>
-          </InfoWindow>
+          </InfoWindow> */}
           {/* Marker */}
           <Marker
             google={this.props.google}

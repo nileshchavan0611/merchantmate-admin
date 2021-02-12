@@ -239,7 +239,7 @@ const TopNav = ({
           </span>
         </div>
 
-        <div className="d-inline-block">
+        <div className=" d-none">
           <UncontrolledDropdown className="ml-2">
             <DropdownToggle
               caret

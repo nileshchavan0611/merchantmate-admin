@@ -83,6 +83,7 @@ class MerchantProviderPage extends React.Component {
       .then((resp) => {
         /* eslint-disable-line camelcase */
         console.log('save data', resp);
+
         this.getMerchants();
         this.setState({
           errorMsg: '',
@@ -90,8 +91,11 @@ class MerchantProviderPage extends React.Component {
           providerId: '',
           selected: [],
         });
-
-        this.setState({ successMsg: 'Merchant Provider Added!' });
+        if (resp.data === false) {
+          this.setState({ successMsg: 'Merchant Provider Already exists!' });
+        } else {
+          this.setState({ successMsg: 'Merchant Provider Added!' });
+        }
       });
   };
 

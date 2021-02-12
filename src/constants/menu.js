@@ -19,5 +19,11 @@ const data = [
     label: 'menu.user-page',
     to: `${adminRoot}/user-page`,
   },
+  {
+    id: 'notificationpage',
+    icon: 'simple-icon-organization',
+    label: 'menu.notification-page',
+    to: `${adminRoot}/notification-page`,
+  },
 ];
 export default data;

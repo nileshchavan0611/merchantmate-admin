@@ -197,7 +197,6 @@ class UserFormPage extends React.Component {
       formData = resp.data[0];
 
       formData.user_GoID = formData.id;
-      this.handleAddressSelect(formData.businessaddress);
       if (isAdd) {
         formData.user_ClerkID = '';
         formData.user_TerminalID = '';
@@ -226,6 +225,7 @@ class UserFormPage extends React.Component {
       } else {
         this.setState({ dataLoading: false });
       }
+      this.handleAddressSelect(formData.businessaddress);
     });
   };
 

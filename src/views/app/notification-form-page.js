@@ -2,218 +2,121 @@
 import React from 'react';
 import { Row, Button, Col } from 'reactstrap';
 import { Formik, Form, Field } from 'formik';
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import PlacesAutocomplete, {
-  geocodeByAddress,
-  getLatLng,
-} from 'react-places-autocomplete';
-import Home from './Map/Home';
 import IntlMessages from '../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
 import axois from '../../axois';
 // import axois from '../../axois';
 
-class MerchantFormPage extends React.Component {
+class NotificationFormPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      latLng: {},
-      isLoading: false,
-      merchantID: '',
-      address: '',
-      markerPosition: {},
-      mapPosition: {},
-      place: '',
-      selected: [],
+      notificationID: '',
+      country: '',
       formData: {
-        businessName: '',
-        emailAddress: '',
-        regionCountry: '',
-        site_Id: '',
-        businessaddress: '',
+        name: '',
+        description: '',
+        country: '',
       },
       errorMsg: '',
     };
-    this.saveMerchant = this.saveMerchant.bind(this);
+    this.saveNotification = this.saveNotification.bind(this);
   }
 
   componentDidMount() {
     const { match } = this.props;
-    if (match.params.merchantID) {
-      this.getMarchantDetails(match.params.merchantID);
+    if (match.params.notificationID) {
+      this.getNotificationDetails(match.params.notificationID);
     }
   }
 
-  makeAndHandleRequest = (query) => {
-    return axois(`Merchants/api/Merchants/SearchCustMerchantIds/${query}`).then(
+  getNotificationDetails = (query) => {
+    return axois(`Merchants/api/Merchants/GetNotificationById/${query}`).then(
       (resp) => {
         /* eslint-disable-line camelcase */
-        const options = resp.data.map((i) => ({
-          id: i,
-          label: i,
-        }));
-        return { options };
+        console.log('rep', resp);
+        const notificationData = resp.data[0];
+
+        this.setState({
+          notificationID: query,
+          errorMsg: '',
+        });
+        if (notificationData) {
+          this.setState({
+            formData: notificationData,
+            country: notificationData.country,
+          });
+        }
       }
     );
   };
 
-  saveMerchant = (values) => {
-    const { merchantID, address, region, formData } = this.state;
+  saveNotification = (values) => {
+    const { notificationID, address, country, formData } = this.state;
     const { history } = this.props;
-    if (!merchantID) {
-      this.setState({ errorMsg: 'Please enter merchant id' });
-      return null;
-    }
 
-    if (formData.id) {
+    if (notificationID) {
       return axois
-        .post(`Merchants/api/Merchants/Edit`, {
-          id: formData.id,
-          merchant_ID: merchantID,
-          businessName: values.businessName,
-          businessaddress: address,
-          emailAddress: values.emailAddress,
-          regionCountry: region,
-          site_Id: values.site_Id,
-          logo: formData.logo,
+        .post(`/Merchants/api/Merchants/UpdateNotification`, {
+          notificationId: notificationID,
+          name: values.name,
+          description: values.description,
+          country,
         })
         .then((resp) => {
           /* eslint-disable-line camelcase */
           console.log('save data', resp);
-          history.push('/app/merchant-page');
+          history.push('/app/notification-page');
         });
     }
     return axois
-      .post(`Merchants/api/Merchants/Create`, {
-        merchant_ID: merchantID,
-        businessName: values.businessName,
-        businessaddress: address,
-        emailAddress: values.emailAddress,
-        regionCountry: region,
-        site_Id: values.site_Id,
-        logo: '',
+      .post(`/Merchants/api/Merchants/AddNotification`, {
+        notificationId: notificationID,
+        name: values.name,
+        description: values.description,
+        country,
       })
       .then((resp) => {
         /* eslint-disable-line camelcase */
         console.log('save data', resp);
-        history.push('/app/merchant-page');
+        history.push('/app/notification-page');
       });
-  };
-
-  getMarchantDetails = (query) => {
-    return axois(
-      `Merchants/api/Merchants/GetMerchant_By_MerchantID/${query}`
-    ).then((resp) => {
-      /* eslint-disable-line camelcase */
-      console.log('rep', resp);
-      const merchantData = resp.data[0];
-
-      this.setState({
-        selected: [query],
-        merchantID: query,
-        errorMsg: '',
-      });
-      if (merchantData) {
-        this.setState({
-          formData: merchantData,
-          region: merchantData.regionCountry,
-          address: merchantData.businessaddress,
-          selected: [query],
-        });
-        this.handleAddressSelect(merchantData.businessaddress);
-      }
-    });
-  };
-
-  handleInputChange = (query) => {
-    this.setState({ query });
-  };
-
-  menuItemClickHandler = (str) => {
-    if (str[0]) {
-      this.setState({ merchantID: str[0].id });
-      this.getMarchantDetails(str[0].id);
-    }
   };
 
   clearStateData = () => {
     this.setState({
       formData: {
-        businessName: '',
-        emailAddress: '',
-        regionCountry: '',
-        site_Id: '',
-        businessaddress: '',
+        name: '',
+        description: '',
+        country: '',
       },
-      region: '',
-      address: '',
+      country: '',
     });
-  };
-
-  handleSearch = (query) => {
-    this.setState({ isLoading: true, selected: [], merchantID: '' });
-    this.clearStateData();
-    this.makeAndHandleRequest(query).then((resp) => {
-      this.setState({
-        isLoading: false,
-        options: resp.options,
-      });
-    });
-  };
-
-  handleAddressChange = (address) => {
-    this.setState({ address });
   };
 
   handleRegionChange = (event) => {
     console.log('event', event);
-    this.setState({ region: event.target.value });
-  };
-
-  handleAddressSelect = (address) => {
-    geocodeByAddress(address)
-      .then((results) => {
-        this.setState({ place: results[0] });
-        console.log(results[0]);
-        this.handleAddressChange(results[0].formatted_address);
-        return getLatLng(results[0]);
-      })
-      .then((latLng) => {
-        console.log('Success', latLng);
-        this.setState({ latLng });
-      })
-      .catch((error) => console.error('Error', error));
+    this.setState({ country: event.target.value });
   };
 
   render() {
     const { match } = this.props;
-    const {
-      formData,
-      address,
-      region,
-      query,
-      latLng,
-      errorMsg,
-      merchantID,
-      markerPosition,
-      mapPosition,
-      place,
-    } = this.state;
+    const { formData, country, query, errorMsg } = this.state;
     console.log(formData);
     console.log(match, query);
     return (
       <>
         <Row>
           <Colxx xxs="12">
-            <Breadcrumb heading="menu.merchant-form-page" match={match} />
+            <Breadcrumb heading="menu.notification-form-page" match={match} />
             <Separator className="mb-5" />
           </Colxx>
         </Row>
         <Row>
           <Colxx xxs="12" className="mb-4">
             <p>
-              <IntlMessages id="menu.merchant-form-page" />
+              <IntlMessages id="menu.notification-form-page" />
             </p>
             {errorMsg && <p className="error-msg">{errorMsg}</p>}
             <div className="">
@@ -222,7 +125,7 @@ class MerchantFormPage extends React.Component {
                 onSubmit={(values, { setSubmitting }) => {
                   setTimeout(() => {
                     console.log(values);
-                    this.saveMerchant(values);
+                    this.saveNotification(values);
                     setSubmitting(false);
                   }, 400);
                 }}
@@ -233,91 +136,24 @@ class MerchantFormPage extends React.Component {
                     <Form className="">
                       <Row>
                         <Col>
-                          <AsyncTypeahead
-                            {...this.state}
-                            id="async-pagination-example"
-                            labelKey="label"
-                            className="mb-3"
-                            minLength={1}
-                            isInvalid={!!(errorMsg && !merchantID)}
-                            onInputChange={this.handleInputChange}
-                            onChange={this.menuItemClickHandler}
-                            onSearch={this.handleSearch}
-                            paginate
-                            name="merchant_ID"
-                            placeholder="Search for a merchant id..."
-                            renderMenuItemChildren={(option) => (
-                              <div key={option.id}>
-                                <span>{option.label}</span>
-                              </div>
-                            )}
-                            useCache={false}
+                          <Field
+                            className="form-control mb-3"
+                            name="name"
+                            value={props.values.name}
+                            placeholder="Name"
+                            required
                           />
                           <Field
                             className="form-control mb-3"
-                            name="businessName"
-                            value={props.values.businessName}
-                            placeholder="business Name"
+                            name="description"
+                            value={props.values.description}
+                            placeholder="description"
                             required
                           />
 
-                          <PlacesAutocomplete
-                            value={address}
-                            onChange={this.handleAddressChange}
-                            onSelect={this.handleAddressSelect}
-                            required
-                          >
-                            {({
-                              getInputProps,
-                              suggestions,
-                              getSuggestionItemProps,
-                              loading,
-                            }) => (
-                              <div>
-                                <input
-                                  {...getInputProps({
-                                    placeholder: 'Search Places ...',
-                                    className:
-                                      'location-search-input form-control mb-3',
-                                    required: true,
-                                  })}
-                                />
-                                <div className="autocomplete-dropdown-container">
-                                  {loading && <div>Loading...</div>}
-                                  {suggestions.map((suggestion) => {
-                                    const className = suggestion.active
-                                      ? 'suggestion-item--active'
-                                      : 'suggestion-item';
-                                    // inline style for demonstration purpose
-                                    const style = suggestion.active
-                                      ? {
-                                          backgroundColor: '#fafafa',
-                                          cursor: 'pointer',
-                                        }
-                                      : {
-                                          backgroundColor: '#ffffff',
-                                          cursor: 'pointer',
-                                        };
-                                    return (
-                                      <div
-                                        key={suggestion.description}
-                                        {...getSuggestionItemProps(suggestion, {
-                                          className,
-                                          style,
-                                        })}
-                                      >
-                                        <span>{suggestion.description}</span>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            )}
-                          </PlacesAutocomplete>
-
                           <select
                             className="form-control mb-3"
-                            value={region}
+                            value={country}
                             onBlur={this.handleRegionChange}
                             onChange={this.handleRegionChange}
                             required
@@ -559,22 +395,6 @@ class MerchantFormPage extends React.Component {
                             <option value="Zimbabwe">Zimbabwe</option>
                           </select>
 
-                          <Field
-                            className="form-control mb-3"
-                            name="emailAddress"
-                            value={props.values.emailAddress}
-                            placeholder="Email Address"
-                            type="email"
-                            required
-                          />
-
-                          <Field
-                            className="form-control mb-3"
-                            name="site_Id"
-                            placeholder="Site Id"
-                            value={props.values.site_Id}
-                          />
-
                           <Button
                             color="primary"
                             type="submit"
@@ -585,15 +405,7 @@ class MerchantFormPage extends React.Component {
                           </Button>
                         </Col>
                         <Col>
-                          <div>
-                            <div className="Map">
-                              <Home
-                                markerPosition={markerPosition}
-                                mapPosition={mapPosition}
-                                place={place}
-                              />
-                            </div>
-                          </div>
+                          <div />
                         </Col>
                       </Row>
                     </Form>
@@ -607,4 +419,4 @@ class MerchantFormPage extends React.Component {
     );
   }
 }
-export default MerchantFormPage;
+export default NotificationFormPage;

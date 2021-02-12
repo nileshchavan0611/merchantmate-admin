@@ -31,6 +31,13 @@ const UserPage = React.lazy(() =>
 const UserFormPage = React.lazy(() =>
   import(/* webpackChunkName: "viwes-blank-page" */ './user-form-page')
 );
+const NotificationPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './notification-page')
+);
+const NotificationFormPage = React.lazy(() =>
+  import(/* webpackChunkName: "viwes-blank-page" */ './notification-form-page')
+);
+
 const App = ({ match }) => {
   return (
     <AppLayout>
@@ -95,6 +102,19 @@ const App = ({ match }) => {
             <Route
               path={`${match.url}/user-page`}
               render={(props) => <UserPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/notification-page/notification-form-page/:notificationID`}
+              render={(props) => <NotificationFormPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/notification-page/notification-form-page`}
+              exact
+              render={(props) => <NotificationFormPage {...props} />}
+            />
+            <Route
+              path={`${match.url}/notification-page`}
+              render={(props) => <NotificationPage {...props} />}
             />
 
             {/* <Redirect to="/error" /> */}

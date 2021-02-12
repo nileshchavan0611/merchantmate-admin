@@ -53,6 +53,8 @@ module.exports = {
   'menu.merchant-provider-page': 'Merchant Provider',
   'menu.user-page': 'User',
   'menu.user-form-page': 'User Form',
+  'menu.notification-page': 'Notification Page',
+  'menu.notification-form-page': 'Notification Form Page',
   'form-components.provider': 'Provider',
   /* 04.Error  */
   'layouts.error-title': 'Vaya, parece que ha ocurrido un error!',
